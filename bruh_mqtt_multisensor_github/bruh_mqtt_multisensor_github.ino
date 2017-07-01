@@ -72,6 +72,8 @@ const int bluePin = D3;
 #define DHTPIN    D7
 #define DHTTYPE   DHT22
 #define LDRPIN    A0
+/***Added for reed***/
+#define REEDPIN   D6
 
 
 
@@ -90,6 +92,10 @@ float humValue;
 int pirValue;
 int pirStatus;
 String motionStatus;
+/***Added for reed***/
+int reedValue;
+int reedStatus;
+String doorStatus;
 
 char message_buff[100];
 
@@ -145,7 +151,8 @@ void setup() {
   pinMode(PIRPIN, INPUT);
   pinMode(DHTPIN, INPUT);
   pinMode(LDRPIN, INPUT);
-
+  pinMode(REEDPIN, INPUT);
+  
   Serial.begin(115200);
   delay(10);
 
@@ -351,7 +358,7 @@ void sendState() {
   root["motion"] = (String)motionStatus;
   root["ldr"] = (String)LDR;
   root["temperature"] = (String)tempValue;
-
+  root["reed"] = (String)doorStatus;
 
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
@@ -422,6 +429,22 @@ void loop() {
 
     float newTempValue = dht.readTemperature(true); //to use celsius remove the true text inside the parentheses  
     float newHumValue = dht.readHumidity();
+
+    //reed CODE
+    reedValue = digitalRead(REEDPIN); //read state of the REED
+
+    if (reedValue == LOW && reedStatus != 1) {
+      doorStatus = "closed";
+      sendState();
+      reedStatus = 1;
+    }
+
+    else if (reedValue == HIGH && reedStatus != 2) {
+      doorStatus = "open";
+      sendState();
+      reedStatus = 2;
+    }
+    delay(100);
 
     //PIR CODE
     pirValue = digitalRead(PIRPIN); //read state of the
