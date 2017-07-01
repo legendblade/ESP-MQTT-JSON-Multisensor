@@ -16,9 +16,13 @@
   
   - You will also need to download the follow libraries by going to Sketch -> Include Libraries -> Manage Libraries
       - DHT sensor library 
-      - Adfruit unified sensor
+      - Adafruit unified sensor
       - PubSubClient
       - ArduinoJSON
+	  
+  UPDATE 16 MAY 2017 by Knutella - Fixed MQTT disconnects when wifi drops by moving around Reconnect and adding a software reset of MCU
+	           
+  UPDATE 23 MAY 2017 - The MQTT_MAX_PACKET_SIZE parameter may not be setting appropriately do to a bug in the PubSub library. If the MQTT messages are not being transmitted as expected please you may need to change the MQTT_MAX_PACKET_SIZE parameter in "PubSubClient.h" directly.
 
 */
 
@@ -43,6 +47,7 @@
 #define mqtt_port 1883
 
 
+
 /************* MQTT TOPICS (change these topics as you wish)  **************************/
 #define light_state_topic "bruh/sensornode1"
 #define light_set_topic "bruh/sensornode1/set"
@@ -54,7 +59,7 @@ const char* off_cmd = "OFF";
 
 /**************************** FOR OTA **************************************************/
 #define SENSORNAME "sensornode1"
-#define OTApassword "bruh"
+#define OTApassword "YouPassword" // change this to whatever password you want to use when you upload OTA
 int OTAport = 8266;
 
 
@@ -409,22 +414,20 @@ bool checkBoundSensor(float newValue, float prevValue, float maxDiff) {
 }
 
 
-
 /********************************** START MAIN LOOP***************************************/
 void loop() {
 
   ArduinoOTA.handle();
-
+  
   if (!client.connected()) {
-//    reconnect();
+    // reconnect();
     software_Reset();
   }
   client.loop();
 
-
   if (!inFade) {
 
-    float newTempValue = dht.readTemperature(true);
+    float newTempValue = dht.readTemperature(true); //to use celsius remove the true text inside the parentheses  
     float newHumValue = dht.readHumidity();
 
     //reed CODE
