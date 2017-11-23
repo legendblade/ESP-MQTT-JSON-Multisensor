@@ -155,6 +155,14 @@ void setup() {
   pinMode(greenPin,OUTPUT);
   pinMode(bluePin,OUTPUT);
 
+  //new code to turn LED on then off
+  analogWrite(redPin, 1);
+  analogWrite(greenPin, 1);
+  analogWrite(bluePin, 1);
+  analogWrite(redPin, 0);
+  analogWrite(greenPin, 0);
+  analogWrite(bluePin, 0);
+
   Serial.begin(115200);
   delay(10);
 
