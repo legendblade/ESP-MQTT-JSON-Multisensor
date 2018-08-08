@@ -369,17 +369,11 @@ void sendState() {
   root["brightness"] = brightness;
   root["motion"] = (String)motionStatus;
   root["ldr"] = (String)LDR;
-<<<<<<< HEAD
-  if (humValue>1) { //only transmit valid values
+  if (humValue > 1) { //only transmit valid values
     root["humidity"] = (String)humValue;
     root["temperature"] = (String)tempValue;
-    root["heatIndex"] = (String)calculateHeatIndex(humValue, tempValue);
+    root["heatIndex"] = (String)dht.computeHeatIndex(tempValue, humValue, IsFahrenheit);
   }
-=======
-  root["temperature"] = (String)tempValue;
-  root["heatIndex"] = (String)dht.computeHeatIndex(tempValue, humValue, IsFahrenheit);
-
->>>>>>> 8c87c4a5ac824b71de16bef0f4620344e4516924
 
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
